@@ -1,0 +1,121 @@
+PARA A ABA TODOS OS PASSEIOS:
+  
+  AGENCIA
+   SHOW?
+    [TIPO DE PASSEIO]<>"Avulso"
+   REQUIRE?
+    [TIPO DE PASSEIO]="De Agência"
+   INITIAL VALUE
+    IF([PARCEIRO AVULSO] = "", "AVULSO", [AGENCIA])
+   
+
+  QTD
+   SHOW?
+    [tipo de passeio]<>"Avulso"
+   EDIDIBLE?
+    [STATUS DA COMISSÃO]<>"recebido"
+  ENITIAL VALUE
+    IFS([TIPO DE PASSEIO] = "Avulso", 1, [TIPO DE PASSEIO] = "De Agência",0)
+
+  VENDEDOR
+   EDIDIBLE_if
+    [STATUS DA COMISSÃO]<>"recebido"
+   
+
+ VALOR POR PESSOA/POR PASSEIO(comissão)
+  INITIAL VALUE
+   IFS([AGENCIA] = "MARTUR/Charles", 20, [agencia]="Vvs",20,[agencia]="Will Tour",25,[agencia]="Roto dos Mares",30,[agencia]="Eloim",25,[agencia]="LITORAL TOURS",30,[agencia]="MASURTUR",20,[agencia]="TAIDÊ",30 ) 
+  EDIDIBLE?
+   [STATUS DA COMISSÃO]<>"recebido"
+
+
+FORMA DE RECEBIMENTO
+ INITIAL VALUE:
+  IFS([AGENCIA] = "MARTUR/Charle", DINHEIRO, [agencia]="Vvs",DINHEIRO,[agencia]="Will Tour", PIX,[agencia]="Roto dos Mares",PIX,[agencia]="Eloim",PIX,[agencia]="LITORAL TOURS",PIX,[agencia]="MASURTUR",PIX,[agencia]="TAIDÊ",PIX )
+ EDIDIBLE?
+ [STATUS DA COMISSÃO]="falta receber"
+
+ STATUS DA COMISSÃO
+  INITIAL VALUE
+  "FALTA RECEBER"
+
+TIPO DE PASSEIO
+ INITIAL values
+ "De Agência"
+
+PARCEIRO AVULSO
+  SHOW?:
+   [TIPO DE PASSEIO]<>"De Agência"
+  QUIQUIRE:
+   [TIPO DE PASSEIO]="Avulso"
+  
+
+STATUS
+ INITIAL VALUE
+  "CONFIRMADO"
+
+ÚLTIMA ALTERAÇÃP FEITTA POR ?
+  AUTO COMPUTE
+   USERMAIL()
+
+
+
+   //códigos das ações 
+
+   Falra pelo whatsapp
+   CONCATENATE(
+    "https://wa.me/55",
+    [WHATSAPP ],)
+
+  CANCELAR PASSEIO
+   Only if this conditions ins true:
+    AND([STATUS DA COMISSÃO] = "FALTA RECEBER", 
+    [STATUS]="CONFIRMADO",[VALOR TOTAL]>0)
+
+DEPOSITAR EM COFRE 
+ Only if this conditions ins true:
+ AND([FORMA DE RECEBIMENTO]="PIX", [STATUS DA COMISSÃO] ="RECEBIDO")
+
+ FOI RECEBIDO
+  Only if this conditions ins true:
+  AND([STATUS DA COMISSÃO]="FALTA RECEBER", [VALOR POR PESSOA/POR PASSEIO(comissão)]>0)
+
+  MUDAR PARAPIX
+   Only if this conditions is true
+    AND([FORMA DE RECEBIMENTO]="DINHEIRO", [STATUS DA COMISSÃO] ="RECEBIDO")
+  Confirmation message
+   "O recebimento  será passado para valor em PIX. Se tem este vslor em PIx confirme."
+
+
+
+   PASSEIO CANCELADO
+    Only if this conditions is true
+     [VALOR POR PESSOA/POR PASSEIO(comissão)]<>"0"
+
+  VALOR = 0
+    Only if this condition is true
+     [STATUS]="CANCELADO"
+
+FECHAR RELATORIO
+  Referenced Rows
+   LIST("", "")
+  Only if this conditions is true:
+  OR(USEREMAIL() = mmsilva7210@gmail.com, USEREMAIL() =marcelenegolden@gmail.com ,USEREMAIL() =recepcaopasseios@gmail.com)
+
+  PAGAR ASSINATURA
+   TARGET
+   "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=2c9380848a6c2082018a779780990772"
+  
+   ENVIAR WHATSAPP
+    TARGET
+    CONCATENATE(
+      "https://wa.me/55",
+      [WHATSPP ],
+      
+      "?text=Olá  
+      ",[NOME],
+      
+      
+
+
+      
